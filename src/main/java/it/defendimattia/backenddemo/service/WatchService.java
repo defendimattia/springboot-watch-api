@@ -13,6 +13,9 @@ import it.defendimattia.backenddemo.model.Watch;
 import it.defendimattia.backenddemo.repository.WatchRepository;
 import it.defendimattia.backenddemo.specification.WatchSpecification;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Service layer for managing luxury watches.
  * 
@@ -27,6 +30,8 @@ public class WatchService {
 
     @Autowired
     private WatchRepository watchRepo;
+
+    private static final Logger logger = LoggerFactory.getLogger(WatchService.class);
 
     /**
      * Retrieves all watches.
@@ -47,7 +52,10 @@ public class WatchService {
      */
     public Watch getWatchById(Integer id) {
         return watchRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Watch not found with id " + id));
+                .orElseThrow(() -> {
+                    logger.warn("Watch not found with ID: {}", id);
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Watch not found with id " + id);
+                });
     }
 
     /**
@@ -119,13 +127,19 @@ public class WatchService {
      *                                 (HTTP 409)
      */
     public Watch addWatch(Watch watch) {
-
         if (watch.getId() != null && watchRepo.existsById(watch.getId())) {
+            logger.warn("Attempt to create duplicate watch with ID: {}", watch.getId());
+
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Watch with id " + watch.getId() + " already exists");
         }
 
-        return watchRepo.save(watch);
+        Watch savedWatch = watchRepo.save(watch);
+
+        logger.info("Added watch with ID: {}, brand '{}' and model '{}'", savedWatch.getId(), savedWatch.getBrand(),
+                savedWatch.getModel());
+
+        return savedWatch;
     }
 
     /**
@@ -138,45 +152,99 @@ public class WatchService {
      *                                 or if the watch does not exist (HTTP 404)
      */
     public Watch updateWatch(Watch watch) {
-
         if (watch.getId() == null) {
+            logger.warn("Update attempt without ID");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID is required to update a watch");
         }
 
         Watch existing = watchRepo.findById(watch.getId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Watch not found with id " + watch.getId()));
+                .orElseThrow(() -> {
+                    logger.warn("Update failed - watch not found with ID: {}", watch.getId());
+                    return new ResponseStatusException(
+                            HttpStatus.NOT_FOUND, "Watch not found with id " + watch.getId());
+                });
 
-        if (watch.getBrand() != null)
+        boolean changed = false;
+
+        if (watch.getBrand() != null) {
             existing.setBrand(watch.getBrand());
-        if (watch.getModel() != null)
-            existing.setModel(watch.getModel());
-        if (watch.getCaseMaterial() != null)
-            existing.setCaseMaterial(watch.getCaseMaterial());
-        if (watch.getStrapMaterial() != null)
-            existing.setStrapMaterial(watch.getStrapMaterial());
-        if (watch.getMovementType() != null)
-            existing.setMovementType(watch.getMovementType());
-        if (watch.getWaterResistance() != null)
-            existing.setWaterResistance(watch.getWaterResistance());
-        if (watch.getCaseDiameter() != null)
-            existing.setCaseDiameter(watch.getCaseDiameter());
-        if (watch.getCaseThickness() != null)
-            existing.setCaseThickness(watch.getCaseThickness());
-        if (watch.getBandWidth() != null)
-            existing.setBandWidth(watch.getBandWidth());
-        if (watch.getDialColor() != null)
-            existing.setDialColor(watch.getDialColor());
-        if (watch.getCrystalMaterial() != null)
-            existing.setCrystalMaterial(watch.getCrystalMaterial());
-        if (watch.getComplications() != null)
-            existing.setComplications(watch.getComplications());
-        if (watch.getPowerReserve() != null)
-            existing.setPowerReserve(watch.getPowerReserve());
-        if (watch.getPrice() != null)
-            existing.setPrice(watch.getPrice());
+            changed = true;
+        }
 
-        return watchRepo.save(existing);
+        if (watch.getModel() != null) {
+            existing.setModel(watch.getModel());
+            changed = true;
+        }
+
+        if (watch.getCaseMaterial() != null) {
+            existing.setCaseMaterial(watch.getCaseMaterial());
+            changed = true;
+        }
+
+        if (watch.getStrapMaterial() != null) {
+            existing.setStrapMaterial(watch.getStrapMaterial());
+            changed = true;
+        }
+
+        if (watch.getMovementType() != null) {
+            existing.setMovementType(watch.getMovementType());
+            changed = true;
+        }
+
+        if (watch.getWaterResistance() != null) {
+            existing.setWaterResistance(watch.getWaterResistance());
+            changed = true;
+        }
+
+        if (watch.getCaseDiameter() != null) {
+            existing.setCaseDiameter(watch.getCaseDiameter());
+            changed = true;
+        }
+
+        if (watch.getCaseThickness() != null) {
+            existing.setCaseThickness(watch.getCaseThickness());
+            changed = true;
+        }
+
+        if (watch.getBandWidth() != null) {
+            existing.setBandWidth(watch.getBandWidth());
+            changed = true;
+        }
+
+        if (watch.getDialColor() != null) {
+            existing.setDialColor(watch.getDialColor());
+            changed = true;
+        }
+
+        if (watch.getCrystalMaterial() != null) {
+            existing.setCrystalMaterial(watch.getCrystalMaterial());
+            changed = true;
+        }
+
+        if (watch.getComplications() != null) {
+            existing.setComplications(watch.getComplications());
+            changed = true;
+        }
+
+        if (watch.getPowerReserve() != null) {
+            existing.setPowerReserve(watch.getPowerReserve());
+            changed = true;
+        }
+
+        if (watch.getPrice() != null) {
+            existing.setPrice(watch.getPrice());
+            changed = true;
+        }
+
+        watchRepo.save(existing);
+
+        if (changed) {
+            logger.info("Updated watch ID: {}", watch.getId());
+        } else {
+            logger.info("Update called but no changes applied for watch ID: {}", watch.getId());
+        }
+
+        return existing;
     }
 
     /**
@@ -187,12 +255,18 @@ public class WatchService {
      *                                 404)
      */
     public void deleteWatch(Integer id) {
-
         Watch existing = watchRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Watch not found with id " + id));
+                .orElseThrow(() -> {
+                    logger.warn("Delete failed - watch not found with ID: {}", id);
+                    return new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "Watch not found with id " + id);
+                });
 
         watchRepo.delete(existing);
+
+        logger.info("Deleted watch with ID: {}, brand '{}' and model '{}'", existing.getId(), existing.getBrand(),
+                existing.getModel());
     }
 
 }

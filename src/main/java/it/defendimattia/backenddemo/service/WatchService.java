@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import it.defendimattia.backenddemo.dto.WatchCreateDTO;
 import it.defendimattia.backenddemo.dto.WatchResponseDTO;
 import it.defendimattia.backenddemo.model.Watch;
 import it.defendimattia.backenddemo.repository.WatchRepository;
@@ -157,12 +158,29 @@ public class WatchService {
     /**
      * Adds a new watch to the repository.
      *
-     * @param watch the {@link Watch} to add
-     * @return the saved {@link Watch} entity
-     * @throws ResponseStatusException if a watch with the same id already exists
-     *                                 (HTTP 409)
+     * @param dto the data used to create the watch
+     * @return the created watch as {@link WatchResponseDTO}
+     * @throws ResponseStatusException if a watch with the same id already exists (HTTP 409)
      */
-    public Watch addWatch(Watch watch) {
+    public WatchResponseDTO addWatch(WatchCreateDTO dto) {
+
+        Watch watch = new Watch();
+
+        watch.setBrand(dto.getBrand());
+        watch.setModel(dto.getModel());
+        watch.setCaseMaterial(dto.getCaseMaterial());
+        watch.setStrapMaterial(dto.getStrapMaterial());
+        watch.setMovementType(dto.getMovementType());
+        watch.setWaterResistance(dto.getWaterResistance());
+        watch.setCaseDiameter(dto.getCaseDiameter());
+        watch.setCaseThickness(dto.getCaseThickness());
+        watch.setBandWidth(dto.getBandWidth());
+        watch.setDialColor(dto.getDialColor());
+        watch.setCrystalMaterial(dto.getCrystalMaterial());
+        watch.setComplications(dto.getComplications());
+        watch.setPowerReserve(dto.getPowerReserve());
+        watch.setPrice(dto.getPrice());
+
         if (watch.getId() != null && watchRepo.existsById(watch.getId())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Watch with id " + watch.getId() + " already exists");
@@ -173,7 +191,7 @@ public class WatchService {
         logger.info("Added watch with ID: {}, brand '{}' and model '{}'", savedWatch.getId(), savedWatch.getBrand(),
                 savedWatch.getModel());
 
-        return savedWatch;
+        return mapToDTO(savedWatch);
     }
 
     /**

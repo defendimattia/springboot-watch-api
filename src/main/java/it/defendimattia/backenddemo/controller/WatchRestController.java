@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import it.defendimattia.backenddemo.dto.WatchCreateDTO;
 import it.defendimattia.backenddemo.dto.WatchResponseDTO;
 import it.defendimattia.backenddemo.model.Watch;
 import it.defendimattia.backenddemo.service.WatchService;
@@ -113,15 +114,15 @@ public class WatchRestController {
     /**
      * Creates a new watch.
      *
-     * @param watch the {@link Watch} entity to create
-     * @return the created {@link Watch} entity
+     * @param watch the watch data used to create a new resource
+     * @return the created watch as {@link WatchResponseDTO}
      * @response 201 CREATED if successfully created
      * @response 409 CONFLICT if a watch with the same ID already exists
      */
     @PostMapping
-    public ResponseEntity<Watch> createWatch(@RequestBody Watch watch) {
+    public ResponseEntity<WatchResponseDTO> createWatch(@RequestBody WatchCreateDTO watch) {
 
-        Watch savedWatch = watchService.addWatch(watch);
+        WatchResponseDTO savedWatch = watchService.addWatch(watch);
 
         return new ResponseEntity<>(savedWatch, HttpStatus.CREATED);
     }

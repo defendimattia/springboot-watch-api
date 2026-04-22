@@ -1,120 +1,65 @@
-package it.defendimattia.backenddemo.model;
+package it.defendimattia.backenddemo.dto;
 
 import java.math.BigDecimal;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 
 /**
- * Entity that represents a luxury watch.
- * 
- * <p>
- * Maps the table {@code luxury_watches} and contains the main characteristics
- * of a
- * single watch.
- * </p>
- * 
+ * DTO used for creating a new Watch.
+ * Contains validation rules for incoming API requests.
  */
-@Entity
-@Table(name = "luxury_watches")
-public class Watch {
+public class WatchCreateDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @Column(name = "\"Brand\"")
+    @NotBlank(message = "brand cannot be empty")
+    @Size(max = 250, message = "brand must be max 250 characters long")
     private String brand;
 
-    @Column(name = "\"Model\"")
+    @NotBlank(message = "model cannot be empty")
+    @Size(max = 250, message = "model must be max 250 characters long")
     private String model;
 
-    /**
-     * Case material type.
-     */
-    @Column(name = "\"Case Material\"")
+    @Size(max = 250, message = "case material must be max 250 characters long")
     private String caseMaterial;
 
-    /**
-     * Strap material type.
-     */
-    @Column(name = "\"Strap Material\"")
+    @Size(max = 250, message = "strap material must be max 250 characters long")
     private String strapMaterial;
 
-    /**
-     * Movement type.
-     */
-    @Column(name = "\"Movement Type\"")
+    @Size(max = 250, message = "movement type must be max 250 characters long")
     private String movementType;
 
-    /**
-     * Water resistance expressed in meters.
-     */
-    @Column(name = "\"Water Resistance (meters)\"")
+    @PositiveOrZero
     private Short waterResistance;
 
-    /**
-     * Case diameter expressed in millimeters.
-     */
-    @Column(name = "\"Case Diameter (mm)\"")
+    @Positive(message = "case diameter must be greater than 0")
+    @Digits(integer = 2, fraction = 1)
     private BigDecimal caseDiameter;
 
-    /**
-     * Case thickness expressed in millimeters.
-     */
-    @Column(name = "\"Case Thickness (mm)\"")
+    @Positive(message = "case thickness must be greater than 0")
+    @Digits(integer = 2, fraction = 2)
     private BigDecimal caseThickness;
 
-    /**
-     * Band width expressed in millimeters.
-     */
-    @Column(name = "\"Band Width (mm)\"")
+    @Positive(message = "band width must be greater than 0")
+    @Digits(integer = 2, fraction = 0)
     private BigDecimal bandWidth;
 
-    /**
-     * Color of the dial.
-     */
-    @Column(name = "\"Dial Color\"")
+    @Size(max = 250, message = "dial color must be max 250 characters long")
     private String dialColor;
 
-    /**
-     * Crystal material type.
-     */
-    @Column(name = "\"Crystal Material\"")
+    @Size(max = 250, message = "crystal material must be max 250 characters long")
     private String crystalMaterial;
 
-    /**
-     * Complications featured by the watch.
-     */
-    @Column(name = "\"Complications\"")
+    @Size(max = 400, message = "complications must be max 400 characters long")
     private String complications;
 
-    /**
-     * Power reserve of the watch expressed in hours.
-     */
-    @Column(name = "\"Power Reserve (hours)\"")
+    @Positive
     private Short powerReserve;
 
-    /**
-     * Price of the watch expressed in USD.
-     */
-    @Column(name = "\"Price (USD)\"")
+    @Positive
     private Integer price;
-
-    public Watch() {
-    }
-
-    public Integer getId() {
-        return this.id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public String getBrand() {
         return this.brand;
@@ -227,5 +172,4 @@ public class Watch {
     public void setPrice(Integer price) {
         this.price = price;
     }
-
 }

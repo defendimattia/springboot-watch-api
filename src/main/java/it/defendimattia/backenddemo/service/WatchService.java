@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import it.defendimattia.backenddemo.dto.WatchResponseDTO;
 import it.defendimattia.backenddemo.model.Watch;
 import it.defendimattia.backenddemo.repository.WatchRepository;
 import it.defendimattia.backenddemo.specification.WatchSpecification;
@@ -34,6 +35,34 @@ public class WatchService {
     private static final Logger logger = LoggerFactory.getLogger(WatchService.class);
 
     /**
+     * Maps a Watch entity to a WatchResponseDTO.
+     *
+     * <p>
+     * This method is used internally to separate the persistence model
+     * (entity) from the API response model (DTO), ensuring that the
+     * database structure is not exposed directly to external clients.
+     * </p>
+     */
+    private WatchResponseDTO mapToDTO(Watch watch) {
+        return new WatchResponseDTO(
+                watch.getId(),
+                watch.getBrand(),
+                watch.getModel(),
+                watch.getCaseMaterial(),
+                watch.getStrapMaterial(),
+                watch.getMovementType(),
+                watch.getWaterResistance(),
+                watch.getCaseDiameter(),
+                watch.getCaseThickness(),
+                watch.getBandWidth(),
+                watch.getDialColor(),
+                watch.getCrystalMaterial(),
+                watch.getComplications(),
+                watch.getPowerReserve(),
+                watch.getPrice());
+    }
+
+    /**
      * Retrieves all watches.
      * 
      * @return a list of all {@link Watch} entities
@@ -44,15 +73,22 @@ public class WatchService {
 
     /**
      * Retrieves a single watch by its unique identifier (ID).
-     * 
-     * @param id the indentifier of the watch
-     * @return the {@link Watch} with the given id
+     *
+     * <p>
+     * Returns the watch data as a {@link WatchResponseDTO}, ensuring that
+     * the internal entity model is not exposed directly to the client.
+     * </p>
+     *
+     * @param id the identifier of the watch
+     * @return the watch data as a {@link WatchResponseDTO}
      * @throws ResponseStatusException if no watch with the given id exists (HTTP
      *                                 404)
      */
-    public Watch getWatchById(Integer id) {
-        return watchRepo.findById(id)
+    public WatchResponseDTO getWatchById(Integer id) {
+        Watch watch = watchRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Watch not found with id " + id));
+
+        return mapToDTO(watch);
     }
 
     /**

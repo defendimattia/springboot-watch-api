@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import it.defendimattia.backenddemo.dto.WatchResponseDTO;
 import it.defendimattia.backenddemo.model.Watch;
 import it.defendimattia.backenddemo.service.WatchService;
 
@@ -51,15 +52,13 @@ public class WatchRestController {
      * Retrieves a single watch by its unique ID.
      *
      * @param id the identifier of the watch
-     * @return the {@link Watch} entity
+     * @return the watch data as a {@link WatchResponseDTO}
      * @response 200 OK if found
      * @response 404 NOT FOUND if no watch exists with the given ID
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Watch> show(@PathVariable Integer id) {
-
-        Watch watch = watchService.getWatchById(id);
-
+    public ResponseEntity<WatchResponseDTO> show(@PathVariable Integer id) {
+        WatchResponseDTO watch = watchService.getWatchById(id);
         return ResponseEntity.ok(watch);
     }
 

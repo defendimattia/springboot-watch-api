@@ -181,7 +181,7 @@ public class WatchService {
         watch.setPowerReserve(dto.getPowerReserve());
         watch.setPrice(dto.getPrice());
 
-        if (watch.getId() != null && watchRepo.existsById(watch.getId())) {
+        if (watch.getId() != null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Watch with id " + watch.getId() + " already exists");
         }

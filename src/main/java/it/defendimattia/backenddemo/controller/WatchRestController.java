@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import it.defendimattia.backenddemo.dto.WatchCreateDTO;
 import it.defendimattia.backenddemo.dto.WatchDetailsDTO;
+import it.defendimattia.backenddemo.dto.WatchListDTO;
 import it.defendimattia.backenddemo.dto.WatchUpdateDTO;
 import it.defendimattia.backenddemo.model.Watch;
 import it.defendimattia.backenddemo.service.WatchService;
@@ -47,7 +48,7 @@ public class WatchRestController {
      * @response 200 OK if the request is successful
      */
     @GetMapping
-    public List<WatchDetailsDTO> index() {
+    public List<WatchListDTO> index() {
         return watchService.getAllWatches();
     }
 

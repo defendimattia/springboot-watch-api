@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import it.defendimattia.backenddemo.dto.WatchCreateDTO;
 import it.defendimattia.backenddemo.dto.WatchDetailsDTO;
+import it.defendimattia.backenddemo.dto.WatchListDTO;
 import it.defendimattia.backenddemo.dto.WatchUpdateDTO;
 import it.defendimattia.backenddemo.model.Watch;
 import it.defendimattia.backenddemo.repository.WatchRepository;
@@ -69,10 +70,14 @@ public class WatchService {
      *
      * @return a list of watch data as {@link WatchDetailsDTO}
      */
-    public List<WatchDetailsDTO> getAllWatches() {
+    public List<WatchListDTO> getAllWatches() {
         return watchRepo.findAll()
                 .stream()
-                .map(this::mapToDTO)
+                .map(w -> new WatchListDTO(
+                        w.getId(),
+                        w.getBrand(),
+                        w.getModel(),
+                        w.getPrice()))
                 .toList();
     }
 

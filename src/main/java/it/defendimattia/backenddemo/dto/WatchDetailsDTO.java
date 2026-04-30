@@ -2,7 +2,7 @@ package it.defendimattia.backenddemo.dto;
 
 import java.math.BigDecimal;
 
-public class WatchResponseDTO {
+public class WatchDetailsDTO {
 
     private final Integer id;
     private final String brand;
@@ -20,7 +20,7 @@ public class WatchResponseDTO {
     private final Short powerReserve;
     private final Integer price;
 
-    public WatchResponseDTO(
+    public WatchDetailsDTO(
             Integer id,
             String brand,
             String model,

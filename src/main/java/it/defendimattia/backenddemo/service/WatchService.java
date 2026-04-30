@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import it.defendimattia.backenddemo.dto.WatchCreateDTO;
-import it.defendimattia.backenddemo.dto.WatchResponseDTO;
+import it.defendimattia.backenddemo.dto.WatchDetailsDTO;
 import it.defendimattia.backenddemo.dto.WatchUpdateDTO;
 import it.defendimattia.backenddemo.model.Watch;
 import it.defendimattia.backenddemo.repository.WatchRepository;
@@ -45,8 +45,8 @@ public class WatchService {
      * database structure is not exposed directly to external clients.
      * </p>
      */
-    private WatchResponseDTO mapToDTO(Watch watch) {
-        return new WatchResponseDTO(
+    private WatchDetailsDTO mapToDTO(Watch watch) {
+        return new WatchDetailsDTO(
                 watch.getId(),
                 watch.getBrand(),
                 watch.getModel(),
@@ -67,9 +67,9 @@ public class WatchService {
     /**
      * Retrieves all watches.
      *
-     * @return a list of watch data as {@link WatchResponseDTO}
+     * @return a list of watch data as {@link WatchDetailsDTO}
      */
-    public List<WatchResponseDTO> getAllWatches() {
+    public List<WatchDetailsDTO> getAllWatches() {
         return watchRepo.findAll()
                 .stream()
                 .map(this::mapToDTO)
@@ -80,16 +80,16 @@ public class WatchService {
      * Retrieves a single watch by its unique identifier (ID).
      *
      * <p>
-     * Returns the watch data as a {@link WatchResponseDTO}, ensuring that
+     * Returns the watch data as a {@link WatchDetailsDTO}, ensuring that
      * the internal entity model is not exposed directly to the client.
      * </p>
      *
      * @param id the identifier of the watch
-     * @return the watch data as a {@link WatchResponseDTO}
+     * @return the watch data as a {@link WatchDetailsDTO}
      * @throws ResponseStatusException if no watch with the given id exists (HTTP
      *                                 404)
      */
-    public WatchResponseDTO getWatchById(Integer id) {
+    public WatchDetailsDTO getWatchById(Integer id) {
         Watch watch = watchRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Watch not found with id " + id));
 
@@ -160,11 +160,11 @@ public class WatchService {
      * Adds a new watch to the repository.
      *
      * @param dto the data used to create the watch
-     * @return the created watch as {@link WatchResponseDTO}
+     * @return the created watch as {@link WatchDetailsDTO}
      * @throws ResponseStatusException if a watch with the same id already exists
      *                                 (HTTP 409)
      */
-    public WatchResponseDTO addWatch(WatchCreateDTO dto) {
+    public WatchDetailsDTO addWatch(WatchCreateDTO dto) {
 
         Watch watch = new Watch();
 
@@ -202,11 +202,11 @@ public class WatchService {
      * will be applied.
      *
      * @param dto the DTO containing updated data
-     * @return the updated {@link WatchResponseDTO}
+     * @return the updated {@link WatchDetailsDTO}
      * @throws ResponseStatusException if the watch ID is null (HTTP 400)
      *                                 or if the watch does not exist (HTTP 404)
      */
-    public WatchResponseDTO updateWatch(WatchUpdateDTO dto) {
+    public WatchDetailsDTO updateWatch(WatchUpdateDTO dto) {
         if (dto.getId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID is required to update a watch");
         }

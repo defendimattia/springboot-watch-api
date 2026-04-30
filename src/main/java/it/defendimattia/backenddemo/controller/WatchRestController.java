@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.defendimattia.backenddemo.dto.WatchCreateDTO;
-import it.defendimattia.backenddemo.dto.WatchResponseDTO;
+import it.defendimattia.backenddemo.dto.WatchDetailsDTO;
 import it.defendimattia.backenddemo.dto.WatchUpdateDTO;
 import it.defendimattia.backenddemo.model.Watch;
 import it.defendimattia.backenddemo.service.WatchService;
@@ -43,11 +43,11 @@ public class WatchRestController {
     /**
      * Retrieves all watches.
      *
-     * @return a list of watch data as {@link WatchResponseDTO}
+     * @return a list of watch data as {@link WatchDetailsDTO}
      * @response 200 OK if the request is successful
      */
     @GetMapping
-    public List<WatchResponseDTO> index() {
+    public List<WatchDetailsDTO> index() {
         return watchService.getAllWatches();
     }
 
@@ -55,13 +55,13 @@ public class WatchRestController {
      * Retrieves a single watch by its unique ID.
      *
      * @param id the identifier of the watch
-     * @return the watch data as a {@link WatchResponseDTO}
+     * @return the watch data as a {@link WatchDetailsDTO}
      * @response 200 OK if found
      * @response 404 NOT FOUND if no watch exists with the given ID
      */
     @GetMapping("/{id}")
-    public ResponseEntity<WatchResponseDTO> show(@PathVariable Integer id) {
-        WatchResponseDTO watch = watchService.getWatchById(id);
+    public ResponseEntity<WatchDetailsDTO> show(@PathVariable Integer id) {
+        WatchDetailsDTO watch = watchService.getWatchById(id);
         return ResponseEntity.ok(watch);
     }
 
@@ -117,14 +117,14 @@ public class WatchRestController {
      * Creates a new watch.
      *
      * @param watch the watch data used to create a new resource
-     * @return the created watch as {@link WatchResponseDTO}
+     * @return the created watch as {@link WatchDetailsDTO}
      * @response 201 CREATED if successfully created
      * @response 409 CONFLICT if a watch with the same ID already exists
      */
     @PostMapping
-    public ResponseEntity<WatchResponseDTO> createWatch(@Valid @RequestBody WatchCreateDTO watch) {
+    public ResponseEntity<WatchDetailsDTO> createWatch(@Valid @RequestBody WatchCreateDTO watch) {
 
-        WatchResponseDTO savedWatch = watchService.addWatch(watch);
+        WatchDetailsDTO savedWatch = watchService.addWatch(watch);
 
         return new ResponseEntity<>(savedWatch, HttpStatus.CREATED);
     }
@@ -137,15 +137,15 @@ public class WatchRestController {
      * </p>
      *
      * @param dto the {@link WatchUpdateDTO} containing updated fields
-     * @return the updated {@link WatchResponseDTO}
+     * @return the updated {@link WatchDetailsDTO}
      * @response 200 OK if successfully updated
      * @response 400 BAD REQUEST if the ID is missing
      * @response 404 NOT FOUND if the watch does not exist
      */
     @PatchMapping
-    public ResponseEntity<WatchResponseDTO> updateWatchPartial(@Valid @RequestBody WatchUpdateDTO dto) {
+    public ResponseEntity<WatchDetailsDTO> updateWatchPartial(@Valid @RequestBody WatchUpdateDTO dto) {
 
-        WatchResponseDTO updatedWatch = watchService.updateWatch(dto);
+        WatchDetailsDTO updatedWatch = watchService.updateWatch(dto);
 
         return ResponseEntity.ok(updatedWatch);
     }

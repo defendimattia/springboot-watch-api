@@ -13,6 +13,7 @@ import it.defendimattia.backenddemo.dto.WatchCreateDTO;
 import it.defendimattia.backenddemo.dto.WatchDetailsDTO;
 import it.defendimattia.backenddemo.dto.WatchListDTO;
 import it.defendimattia.backenddemo.dto.WatchUpdateDTO;
+import it.defendimattia.backenddemo.mapper.WatchMapper;
 import it.defendimattia.backenddemo.model.Watch;
 import it.defendimattia.backenddemo.repository.WatchRepository;
 import it.defendimattia.backenddemo.specification.WatchSpecification;
@@ -36,34 +37,6 @@ public class WatchService {
     private WatchRepository watchRepo;
 
     private static final Logger logger = LoggerFactory.getLogger(WatchService.class);
-
-    /**
-     * Maps a Watch entity to a WatchResponseDTO.
-     *
-     * <p>
-     * This method is used internally to separate the persistence model
-     * (entity) from the API response model (DTO), ensuring that the
-     * database structure is not exposed directly to external clients.
-     * </p>
-     */
-    private WatchDetailsDTO mapToDTO(Watch watch) {
-        return new WatchDetailsDTO(
-                watch.getId(),
-                watch.getBrand(),
-                watch.getModel(),
-                watch.getCaseMaterial(),
-                watch.getStrapMaterial(),
-                watch.getMovementType(),
-                watch.getWaterResistance(),
-                watch.getCaseDiameter(),
-                watch.getCaseThickness(),
-                watch.getBandWidth(),
-                watch.getDialColor(),
-                watch.getCrystalMaterial(),
-                watch.getComplications(),
-                watch.getPowerReserve(),
-                watch.getPrice());
-    }
 
     /**
      * Retrieves all watches.
@@ -98,7 +71,7 @@ public class WatchService {
         Watch watch = watchRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Watch not found with id " + id));
 
-        return mapToDTO(watch);
+        return WatchMapper.toDTO(watch);
     }
 
     /**
@@ -124,7 +97,7 @@ public class WatchService {
      * @param maxPrice        maximum price in USD
      * @return a list of {@link Watch} entities matching the criteria
      */
-    public List<Watch> search(String brand,
+    public List<WatchListDTO> search(String brand,
             String model,
             String caseMaterial,
             String strapMaterial,
@@ -158,7 +131,10 @@ public class WatchService {
                 .and(WatchSpecification.powerReserveGreaterThanEqual(powerReserve))
                 .and(WatchSpecification.priceLessThanEqual(maxPrice));
 
-        return watchRepo.findAll(spec);
+        return watchRepo.findAll(spec)
+                .stream()
+                .map(w -> new WatchListDTO(w.getId(), w.getBrand(), w.getModel(), w.getPrice()))
+                .toList();
     }
 
     /**
@@ -166,39 +142,16 @@ public class WatchService {
      *
      * @param dto the data used to create the watch
      * @return the created watch as {@link WatchDetailsDTO}
-     * @throws ResponseStatusException if a watch with the same id already exists
-     *                                 (HTTP 409)
      */
     public WatchDetailsDTO addWatch(WatchCreateDTO dto) {
 
-        Watch watch = new Watch();
-
-        watch.setBrand(dto.brand());
-        watch.setModel(dto.model());
-        watch.setCaseMaterial(dto.caseMaterial());
-        watch.setStrapMaterial(dto.strapMaterial());
-        watch.setMovementType(dto.movementType());
-        watch.setWaterResistance(dto.waterResistance());
-        watch.setCaseDiameter(dto.caseDiameter());
-        watch.setCaseThickness(dto.caseThickness());
-        watch.setBandWidth(dto.bandWidth());
-        watch.setDialColor(dto.dialColor());
-        watch.setCrystalMaterial(dto.crystalMaterial());
-        watch.setComplications(dto.complications());
-        watch.setPowerReserve(dto.powerReserve());
-        watch.setPrice(dto.price());
-
-        if (watch.getId() != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Watch with id " + watch.getId() + " already exists");
-        }
-
+        Watch watch = WatchMapper.toEntity(dto);
         Watch savedWatch = watchRepo.save(watch);
 
         logger.info("Added watch with ID: {}, brand '{}' and model '{}'", savedWatch.getId(), savedWatch.getBrand(),
                 savedWatch.getModel());
 
-        return mapToDTO(savedWatch);
+        return WatchMapper.toDTO(savedWatch);
     }
 
     /**
@@ -220,87 +173,12 @@ public class WatchService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Watch not found with id " + dto.id()));
 
-        boolean changed = false;
-
-        if (dto.brand() != null) {
-            existing.setBrand(dto.brand());
-            changed = true;
-        }
-
-        if (dto.model() != null) {
-            existing.setModel(dto.model());
-            changed = true;
-        }
-
-        if (dto.caseMaterial() != null) {
-            existing.setCaseMaterial(dto.caseMaterial());
-            changed = true;
-        }
-
-        if (dto.strapMaterial() != null) {
-            existing.setStrapMaterial(dto.strapMaterial());
-            changed = true;
-        }
-
-        if (dto.movementType() != null) {
-            existing.setMovementType(dto.movementType());
-            changed = true;
-        }
-
-        if (dto.waterResistance() != null) {
-            existing.setWaterResistance(dto.waterResistance());
-            changed = true;
-        }
-
-        if (dto.caseDiameter() != null) {
-            existing.setCaseDiameter(dto.caseDiameter());
-            changed = true;
-        }
-
-        if (dto.caseThickness() != null) {
-            existing.setCaseThickness(dto.caseThickness());
-            changed = true;
-        }
-
-        if (dto.bandWidth() != null) {
-            existing.setBandWidth(dto.bandWidth());
-            changed = true;
-        }
-
-        if (dto.dialColor() != null) {
-            existing.setDialColor(dto.dialColor());
-            changed = true;
-        }
-
-        if (dto.crystalMaterial() != null) {
-            existing.setCrystalMaterial(dto.crystalMaterial());
-            changed = true;
-        }
-
-        if (dto.complications() != null) {
-            existing.setComplications(dto.complications());
-            changed = true;
-        }
-
-        if (dto.powerReserve() != null) {
-            existing.setPowerReserve(dto.powerReserve());
-            changed = true;
-        }
-
-        if (dto.price() != null) {
-            existing.setPrice(dto.price());
-            changed = true;
-        }
-
+        WatchMapper.updateEntity(dto, existing);
         watchRepo.save(existing);
 
-        if (changed) {
-            logger.info("Updated watch ID: {}", dto.id());
-        } else {
-            logger.info("Update called but no changes applied for watch ID: {}", dto.id());
-        }
+        logger.info("Updated watch ID: {}", existing.getId());
 
-        return mapToDTO(existing);
+        return WatchMapper.toDTO(existing);
     }
 
     /**

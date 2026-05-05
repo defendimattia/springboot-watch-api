@@ -92,7 +92,7 @@ public class WatchRestController {
      * @response 200 OK if the request is successful
      */
     @GetMapping("/search")
-    public List<Watch> searchWatches(
+    public List<WatchListDTO> searchWatches(
             @RequestParam(required = false) String brand,
             @RequestParam(required = false) String model,
             @RequestParam(required = false) String caseMaterial,

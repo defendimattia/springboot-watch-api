@@ -3,11 +3,14 @@ package it.defendimattia.backenddemo.service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import it.defendimattia.backenddemo.dto.PaginatedResponse;
 import it.defendimattia.backenddemo.dto.WatchCreateDTO;
 import it.defendimattia.backenddemo.dto.WatchDetailsDTO;
 import it.defendimattia.backenddemo.dto.WatchListDTO;
@@ -44,8 +47,11 @@ public class WatchService {
          *
          * @return a list of watch data as {@link WatchDetailsDTO}
          */
-        public List<WatchListDTO> getAllWatches() {
-                return watchRepo.findAll()
+        public PaginatedResponse<WatchListDTO> getAllWatches(Pageable pageable) {
+
+                Page<Watch> page = watchRepo.findAll(pageable);
+
+                List<WatchListDTO> content = page.getContent()
                                 .stream()
                                 .map(w -> new WatchListDTO(
                                                 w.getId(),
@@ -53,6 +59,13 @@ public class WatchService {
                                                 w.getModel(),
                                                 w.getPrice()))
                                 .toList();
+
+                return new PaginatedResponse<>(
+                                content,
+                                page.getNumber(),
+                                page.getSize(),
+                                page.getTotalElements(),
+                                page.getTotalPages());
         }
 
         /**

@@ -3,11 +3,13 @@ package it.defendimattia.backenddemo.controller;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import it.defendimattia.backenddemo.dto.PaginatedResponse;
 import it.defendimattia.backenddemo.dto.WatchCreateDTO;
 import it.defendimattia.backenddemo.dto.WatchDetailsDTO;
 import it.defendimattia.backenddemo.dto.WatchListDTO;
@@ -50,8 +52,8 @@ public class WatchRestController {
      * @response 200 OK if the request is successful
      */
     @GetMapping
-    public List<WatchListDTO> index() {
-        return watchService.getAllWatches();
+    public PaginatedResponse<WatchListDTO> index(Pageable pageable) {
+        return watchService.getAllWatches(pageable);
     }
 
     /**

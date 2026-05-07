@@ -1,7 +1,6 @@
 package it.defendimattia.backenddemo.controller;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -92,11 +91,12 @@ public class WatchRestController {
      * @param complications   complications/features of the watch
      * @param powerReserve    minimum power reserve in hours
      * @param maxPrice        maximum price in USD
-     * @return a list of {@link Watch} entities matching the criteria
-     * @response 200 OK if the request is successful
+     * @return a paginated list of matching watches
+     * @response 200 OK if the
+     *           request is successful
      */
     @GetMapping("/search")
-    public List<WatchListDTO> searchWatches(
+    public PaginatedResponse<WatchListDTO> searchWatches(
             @RequestParam(required = false) String brand,
             @RequestParam(required = false) String model,
             @RequestParam(required = false) String caseMaterial,
@@ -110,12 +110,13 @@ public class WatchRestController {
             @RequestParam(required = false) String crystalMaterial,
             @RequestParam(required = false) String complications,
             @RequestParam(required = false) Short powerReserve,
-            @RequestParam(required = false) Integer maxPrice) {
+            @RequestParam(required = false) Integer maxPrice,
+            Pageable pageable) {
 
         return watchService.search(
                 brand, model, caseMaterial, strapMaterial, movementType,
                 waterResistance, caseDiameter, caseThickness, bandWidth,
-                dialColor, crystalMaterial, complications, powerReserve, maxPrice);
+                dialColor, crystalMaterial, complications, powerReserve, maxPrice, pageable);
     }
 
     /**

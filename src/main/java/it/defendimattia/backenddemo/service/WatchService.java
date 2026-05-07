@@ -115,9 +115,10 @@ public class WatchService {
          * @param complications   complications of the watch
          * @param powerReserve    minimum power reserve in hours
          * @param maxPrice        maximum price in USD
-         * @return a list of {@link Watch} entities matching the criteria
+         * @return a paginated list of matching watches
          */
-        public List<WatchListDTO> search(String brand,
+        public PaginatedResponse<WatchListDTO> search(
+                        String brand,
                         String model,
                         String caseMaterial,
                         String strapMaterial,
@@ -130,7 +131,8 @@ public class WatchService {
                         String crystalMaterial,
                         String complications,
                         Short powerReserve,
-                        Integer maxPrice) {
+                        Integer maxPrice,
+                        Pageable pageable) {
 
                 Specification<Watch> spec = Specification.where(WatchSpecification.brandContains(brand))
                                 .and(WatchSpecification.modelContains(model))
@@ -152,10 +154,23 @@ public class WatchService {
                                 .and(WatchSpecification.powerReserveGreaterThanEqual(powerReserve))
                                 .and(WatchSpecification.priceLessThanEqual(maxPrice));
 
-                return watchRepo.findAll(spec)
+                Pageable safePageable = PageableValidator.sanitize(
+                                pageable,
+                                List.of("id", "brand", "model", "price"));
+
+                Page<Watch> page = watchRepo.findAll(spec, safePageable);
+
+                List<WatchListDTO> content = page.getContent()
                                 .stream()
                                 .map(w -> new WatchListDTO(w.getId(), w.getBrand(), w.getModel(), w.getPrice()))
                                 .toList();
+
+                return new PaginatedResponse<>(
+                                content,
+                                page.getNumber(),
+                                page.getSize(),
+                                page.getTotalElements(),
+                                page.getTotalPages());
         }
 
         /**

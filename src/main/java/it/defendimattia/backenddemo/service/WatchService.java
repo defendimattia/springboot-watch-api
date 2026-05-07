@@ -19,6 +19,7 @@ import it.defendimattia.backenddemo.mapper.WatchMapper;
 import it.defendimattia.backenddemo.model.Watch;
 import it.defendimattia.backenddemo.repository.WatchRepository;
 import it.defendimattia.backenddemo.specification.WatchSpecification;
+import it.defendimattia.backenddemo.validator.PageableValidator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,11 @@ public class WatchService {
          */
         public PaginatedResponse<WatchListDTO> getAllWatches(Pageable pageable) {
 
-                Page<Watch> page = watchRepo.findAll(pageable);
+                Pageable safePageable = PageableValidator.sanitize(
+                                pageable,
+                                List.of("id", "brand", "model", "price"));
+
+                Page<Watch> page = watchRepo.findAll(safePageable);
 
                 List<WatchListDTO> content = page.getContent()
                                 .stream()

@@ -14,6 +14,7 @@ import it.defendimattia.backenddemo.dto.PaginatedResponse;
 import it.defendimattia.backenddemo.dto.WatchCreateDTO;
 import it.defendimattia.backenddemo.dto.WatchDetailsDTO;
 import it.defendimattia.backenddemo.dto.WatchListDTO;
+import it.defendimattia.backenddemo.dto.WatchSearchDTO;
 import it.defendimattia.backenddemo.dto.WatchUpdateDTO;
 import it.defendimattia.backenddemo.mapper.WatchMapper;
 import it.defendimattia.backenddemo.model.Watch;
@@ -118,41 +119,28 @@ public class WatchService {
          * @return a paginated list of matching watches
          */
         public PaginatedResponse<WatchListDTO> search(
-                        String brand,
-                        String model,
-                        String caseMaterial,
-                        String strapMaterial,
-                        String movementType,
-                        Short waterResistance,
-                        BigDecimal caseDiameter,
-                        BigDecimal caseThickness,
-                        BigDecimal bandWidth,
-                        String dialColor,
-                        String crystalMaterial,
-                        String complications,
-                        Short powerReserve,
-                        Integer maxPrice,
+                        WatchSearchDTO filters,
                         Pageable pageable) {
 
-                Specification<Watch> spec = Specification.where(WatchSpecification.brandContains(brand))
-                                .and(WatchSpecification.modelContains(model))
-                                .and(WatchSpecification.caseMaterialContains(caseMaterial))
-                                .and(WatchSpecification.strapMaterialContains(strapMaterial))
-                                .and(WatchSpecification.movementTypeContains(movementType))
-                                .and(WatchSpecification.waterResistanceGreaterThanEqual(waterResistance))
-                                .and(WatchSpecification.caseDiameterGreaterThanEqual(caseDiameter))
+                Specification<Watch> spec = Specification.where(WatchSpecification.brandContains(filters.brand()))
+                                .and(WatchSpecification.modelContains(filters.model()))
+                                .and(WatchSpecification.caseMaterialContains(filters.caseMaterial()))
+                                .and(WatchSpecification.strapMaterialContains(filters.strapMaterial()))
+                                .and(WatchSpecification.movementTypeContains(filters.movementType()))
+                                .and(WatchSpecification.waterResistanceGreaterThanEqual(filters.waterResistance()))
+                                .and(WatchSpecification.caseDiameterGreaterThanEqual(filters.caseDiameter()))
                                 .and(WatchSpecification
-                                                .caseDiameterLessThan(caseDiameter == null ? null
-                                                                : caseDiameter.add(BigDecimal.ONE)))
-                                .and(WatchSpecification.caseThicknessGreaterThanEqual(caseThickness))
-                                .and(WatchSpecification.caseThicknessLessThanEqual(caseThickness))
-                                .and(WatchSpecification.bandWidthGreaterThanEqual(bandWidth))
-                                .and(WatchSpecification.bandWidthLessThanEqual(bandWidth))
-                                .and(WatchSpecification.dialColorContains(dialColor))
-                                .and(WatchSpecification.crystalMaterialContains(crystalMaterial))
-                                .and(WatchSpecification.complicationsContains(complications))
-                                .and(WatchSpecification.powerReserveGreaterThanEqual(powerReserve))
-                                .and(WatchSpecification.priceLessThanEqual(maxPrice));
+                                                .caseDiameterLessThan(filters.caseDiameter() == null ? null
+                                                                : filters.caseDiameter().add(BigDecimal.ONE)))
+                                .and(WatchSpecification.caseThicknessGreaterThanEqual(filters.caseThickness()))
+                                .and(WatchSpecification.caseThicknessLessThanEqual(filters.caseThickness()))
+                                .and(WatchSpecification.bandWidthGreaterThanEqual(filters.bandWidth()))
+                                .and(WatchSpecification.bandWidthLessThanEqual(filters.bandWidth()))
+                                .and(WatchSpecification.dialColorContains(filters.dialColor()))
+                                .and(WatchSpecification.crystalMaterialContains(filters.crystalMaterial()))
+                                .and(WatchSpecification.complicationsContains(filters.complications()))
+                                .and(WatchSpecification.powerReserveGreaterThanEqual(filters.powerReserve()))
+                                .and(WatchSpecification.priceLessThanEqual(filters.price()));
 
                 Pageable safePageable = PageableValidator.sanitize(
                                 pageable,

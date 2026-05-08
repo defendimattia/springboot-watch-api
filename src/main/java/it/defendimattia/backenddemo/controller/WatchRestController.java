@@ -1,7 +1,5 @@
 package it.defendimattia.backenddemo.controller;
 
-import java.math.BigDecimal;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +10,7 @@ import it.defendimattia.backenddemo.dto.PaginatedResponse;
 import it.defendimattia.backenddemo.dto.WatchCreateDTO;
 import it.defendimattia.backenddemo.dto.WatchDetailsDTO;
 import it.defendimattia.backenddemo.dto.WatchListDTO;
+import it.defendimattia.backenddemo.dto.WatchSearchDTO;
 import it.defendimattia.backenddemo.dto.WatchUpdateDTO;
 import it.defendimattia.backenddemo.model.Watch;
 import it.defendimattia.backenddemo.service.WatchService;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * REST controller for managing luxury watches.
@@ -97,26 +95,10 @@ public class WatchRestController {
      */
     @GetMapping("/search")
     public PaginatedResponse<WatchListDTO> searchWatches(
-            @RequestParam(required = false) String brand,
-            @RequestParam(required = false) String model,
-            @RequestParam(required = false) String caseMaterial,
-            @RequestParam(required = false) String strapMaterial,
-            @RequestParam(required = false) String movementType,
-            @RequestParam(required = false) Short waterResistance,
-            @RequestParam(required = false) BigDecimal caseDiameter,
-            @RequestParam(required = false) BigDecimal caseThickness,
-            @RequestParam(required = false) BigDecimal bandWidth,
-            @RequestParam(required = false) String dialColor,
-            @RequestParam(required = false) String crystalMaterial,
-            @RequestParam(required = false) String complications,
-            @RequestParam(required = false) Short powerReserve,
-            @RequestParam(required = false) Integer maxPrice,
+            @Valid WatchSearchDTO filters,
             Pageable pageable) {
 
-        return watchService.search(
-                brand, model, caseMaterial, strapMaterial, movementType,
-                waterResistance, caseDiameter, caseThickness, bandWidth,
-                dialColor, crystalMaterial, complications, powerReserve, maxPrice, pageable);
+        return watchService.search(filters, pageable);
     }
 
     /**

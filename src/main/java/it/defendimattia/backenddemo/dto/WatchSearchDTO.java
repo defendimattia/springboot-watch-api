@@ -34,6 +34,6 @@ public record WatchSearchDTO(
 
         @Positive Short powerReserve,
 
-        @Positive Integer price) {
+        @Positive Integer maxPrice) {
 
 }

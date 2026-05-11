@@ -1,6 +1,5 @@
 package it.defendimattia.backenddemo.service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -19,7 +18,7 @@ import it.defendimattia.backenddemo.dto.WatchUpdateDTO;
 import it.defendimattia.backenddemo.mapper.WatchMapper;
 import it.defendimattia.backenddemo.model.Watch;
 import it.defendimattia.backenddemo.repository.WatchRepository;
-import it.defendimattia.backenddemo.specification.WatchSpecification;
+import it.defendimattia.backenddemo.specification.WatchSearchSpecification;
 import it.defendimattia.backenddemo.validator.PageableValidator;
 
 import org.slf4j.Logger;
@@ -118,29 +117,11 @@ public class WatchService {
                         WatchSearchDTO filters,
                         Pageable pageable) {
 
-                Specification<Watch> spec = Specification.where(WatchSpecification.brandContains(filters.brand()))
-                                .and(WatchSpecification.modelContains(filters.model()))
-                                .and(WatchSpecification.caseMaterialContains(filters.caseMaterial()))
-                                .and(WatchSpecification.strapMaterialContains(filters.strapMaterial()))
-                                .and(WatchSpecification.movementTypeContains(filters.movementType()))
-                                .and(WatchSpecification.waterResistanceGreaterThanEqual(filters.waterResistance()))
-                                .and(WatchSpecification.caseDiameterGreaterThanEqual(filters.caseDiameter()))
-                                .and(WatchSpecification
-                                                .caseDiameterLessThan(filters.caseDiameter() == null ? null
-                                                                : filters.caseDiameter().add(BigDecimal.ONE)))
-                                .and(WatchSpecification.caseThicknessGreaterThanEqual(filters.caseThickness()))
-                                .and(WatchSpecification.caseThicknessLessThanEqual(filters.caseThickness()))
-                                .and(WatchSpecification.bandWidthGreaterThanEqual(filters.bandWidth()))
-                                .and(WatchSpecification.bandWidthLessThanEqual(filters.bandWidth()))
-                                .and(WatchSpecification.dialColorContains(filters.dialColor()))
-                                .and(WatchSpecification.crystalMaterialContains(filters.crystalMaterial()))
-                                .and(WatchSpecification.complicationsContains(filters.complications()))
-                                .and(WatchSpecification.powerReserveGreaterThanEqual(filters.powerReserve()))
-                                .and(WatchSpecification.priceLessThanEqual(filters.price()));
-
                 Pageable safePageable = PageableValidator.sanitize(
                                 pageable,
                                 List.of("id", "brand", "model", "price"));
+
+                Specification<Watch> spec = WatchSearchSpecification.build(filters);
 
                 Page<Watch> page = watchRepo.findAll(spec, safePageable);
 

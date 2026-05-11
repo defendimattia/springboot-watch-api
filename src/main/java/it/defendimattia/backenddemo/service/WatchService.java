@@ -55,13 +55,13 @@ public class WatchService {
                 return watchRepo.findById(id)
                                 .orElseThrow(() -> new ResponseStatusException(
                                                 HttpStatus.NOT_FOUND,
-                                                "Watch not found with id " + id));
+                                                "Watch not found with id: " + id));
         }
 
         /**
          * Retrieves all watches.
          *
-         * @return a list of watch data as {@link WatchDetailsDTO}
+         * @return a paginated of watch data as {@link WatchListDTO}
          */
         public PaginatedResponse<WatchListDTO> getAllWatches(Pageable pageable) {
 
@@ -71,7 +71,8 @@ public class WatchService {
 
                 Page<Watch> page = watchRepo.findAll(safePageable);
 
-                List<WatchListDTO> content = page
+                List<WatchListDTO> content = page.getContent()
+                                .stream()
                                 .map(WatchMapper::toListDTO)
                                 .toList();
 
@@ -127,7 +128,8 @@ public class WatchService {
 
                 Page<Watch> page = watchRepo.findAll(spec, safePageable);
 
-                List<WatchListDTO> content = page
+                List<WatchListDTO> content = page.getContent()
+                                .stream()
                                 .map(WatchMapper::toListDTO)
                                 .toList();
 
@@ -177,7 +179,7 @@ public class WatchService {
                 WatchMapper.updateEntity(dto, existing);
                 watchRepo.save(existing);
 
-                logger.info("Updated watch ID: {}", existing.getId());
+                logger.info("Updated watch with ID: {}", existing.getId());
 
                 return WatchMapper.toDTO(existing);
         }

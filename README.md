@@ -2,32 +2,58 @@
 
 REST API sviluppata con Spring Boot per la gestione di un catalogo di orologi di lusso.
 
-Il progetto include CRUD completo, validazione dati, gestione errori centralizzata e ricerca avanzata con filtri dinamici.
+Il progetto implementa CRUD completo, ricerca avanzata con filtri dinamici, paginazione, validazione input e separazione pulita delle responsabilità tra controller, service e repository.
+
+---
 
 ## Tech Stack
 - Java 21
-- Spring Boot 4
+- Spring Boot
 - Spring Web MVC
 - Spring Data JPA
 - PostgreSQL
 - Maven
-- Logback
+- SLF4J + Logback
+- Jakarta Validation
+
+---
 
 ## Architettura
-Controller -> Service -> Repository
 
-Utilizzo di DTO per separare request/response dal model database.
+Controller → Service → Repository
+
+Il progetto segue un’architettura a livelli con separazione chiara delle responsabilità:
+
+- **Controller**: espone le API REST
+- **Service**: contiene la business logic
+- **Repository**: accesso ai dati tramite Spring Data JPA
+
+Pattern utilizzati:
+- DTO per separare entity e API contract
+- Mapper centralizzato per conversioni Entity ↔ DTO
+- Specification pattern per query dinamiche
+- Validator per sanitizzazione input (Pageable, sort, ecc.)
+- PaginatedResponse per standardizzare le risposte paginate
+
+---
 
 ## Funzionalità
+
 - CRUD completo watches
-- DTO pattern
+- DTO pattern (Create / Update / List / Details)
 - Validazione input con Jakarta Validation
-- Exception handling centralizzato
+- Exception handling centralizzato (REST errors uniformi)
 - Logging operazioni principali
 - Ricerca avanzata con JPA Specification
+- Paginazione e sorting con Pageable
+- Whitelist dei campi ordinabili (security su sort)
+- Sanitizzazione parametri di paginazione
 - Configurazione tramite variabili ambiente
 
+---
+
 ## Entity Watch
+
 ### Campi principali:
 - Brand
 - Model
@@ -35,25 +61,70 @@ Utilizzo di DTO per separare request/response dal model database.
 - Strap Material
 - Movement Type
 - Water Resistance
-- Dimensions
+- Case Dimensions
 - Dial Color
 - Crystal Material
 - Complications
 - Power Reserve
 - Price
 
-## Search Filters
-### L'endpoint /api/watches/search supporta filtri opzionali combinabili:
+---
+
+## Search
+
+### Endpoint:
+`GET /api/watches/search`
+
+La ricerca utilizza:
+- DTO dedicato (`WatchSearchDTO`)
+- Specification builder centralizzato
+- Filtri opzionali combinabili
+- Paginazione tramite Pageable
+
+### Filtri supportati:
 - brand
 - model
-- materials
+- caseMaterial
+- strapMaterial
 - movementType
 - waterResistance
-- dimensions
+- caseDiameter
+- caseThickness
+- bandWidth
+- dialColor
+- crystalMaterial
+- complications
 - powerReserve
 - maxPrice
 
+---
+
+## Pagination
+
+Le risposte paginate sono standardizzate tramite:
+
+- `PaginatedResponse<T>`
+- metadata inclusi:
+  - page
+  - size
+  - totalElements
+  - totalPages
+  - content
+
+---
+
 ## Database
+
 - Database: PostgreSQL
 - Nome database: LuxuryWatches
-> Nota: Alcuni dati numerici (come prezzi o misure) sono memorizzati come VARCHAR invece che come tipi numerici. Questo può influenzare operazioni come ordinamento o calcoli diretti nel database.
+
+> Nota: Alcuni campi numerici sono stati inizialmente modellati come stringhe per semplicità, ma la struttura attuale è stata progressivamente normalizzata verso tipi più appropriati dove necessario.
+
+---
+
+## Note architetturali
+
+- Il mapping Entity → DTO è centralizzato nel `WatchMapper`
+- La logica di query dinamica è separata nel `WatchSearchSpecification`
+- La validazione della paginazione è gestita da `PageableValidator`
+- Il service layer non contiene logica di costruzione query complessa

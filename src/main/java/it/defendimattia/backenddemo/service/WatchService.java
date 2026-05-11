@@ -59,11 +59,7 @@ public class WatchService {
 
                 List<WatchListDTO> content = page.getContent()
                                 .stream()
-                                .map(w -> new WatchListDTO(
-                                                w.getId(),
-                                                w.getBrand(),
-                                                w.getModel(),
-                                                w.getPrice()))
+                                .map(WatchMapper::toListDTO)
                                 .toList();
 
                 return new PaginatedResponse<>(
@@ -150,7 +146,7 @@ public class WatchService {
 
                 List<WatchListDTO> content = page.getContent()
                                 .stream()
-                                .map(w -> new WatchListDTO(w.getId(), w.getBrand(), w.getModel(), w.getPrice()))
+                                .map(WatchMapper::toListDTO)
                                 .toList();
 
                 return new PaginatedResponse<>(

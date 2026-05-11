@@ -2,6 +2,7 @@ package it.defendimattia.backenddemo.mapper;
 
 import it.defendimattia.backenddemo.dto.WatchCreateDTO;
 import it.defendimattia.backenddemo.dto.WatchDetailsDTO;
+import it.defendimattia.backenddemo.dto.WatchListDTO;
 import it.defendimattia.backenddemo.dto.WatchUpdateDTO;
 import it.defendimattia.backenddemo.model.Watch;
 
@@ -76,5 +77,14 @@ public class WatchMapper {
             watch.setPowerReserve(dto.powerReserve());
         if (dto.price() != null)
             watch.setPrice(dto.price());
+    }
+
+    public static WatchListDTO toListDTO(Watch watch) {
+
+        return new WatchListDTO(
+                watch.getId(),
+                watch.getBrand(),
+                watch.getModel(),
+                watch.getPrice());
     }
 }

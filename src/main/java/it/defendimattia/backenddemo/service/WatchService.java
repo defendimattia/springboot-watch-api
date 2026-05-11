@@ -44,6 +44,21 @@ public class WatchService {
         }
 
         /**
+         * Retrieves a watch by ID or throws a 404 exception if not found.
+         *
+         * @param id the watch identifier
+         * @return the existing watch entity
+         * @throws ResponseStatusException if the watch does not exist
+         */
+        private Watch findWatchOrThrow(Integer id) {
+
+                return watchRepo.findById(id)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND,
+                                                "Watch not found with id " + id));
+        }
+
+        /**
          * Retrieves all watches.
          *
          * @return a list of watch data as {@link WatchDetailsDTO}
@@ -56,8 +71,7 @@ public class WatchService {
 
                 Page<Watch> page = watchRepo.findAll(safePageable);
 
-                List<WatchListDTO> content = page.getContent()
-                                .stream()
+                List<WatchListDTO> content = page
                                 .map(WatchMapper::toListDTO)
                                 .toList();
 
@@ -83,34 +97,22 @@ public class WatchService {
          *                                 404)
          */
         public WatchDetailsDTO getWatchById(Integer id) {
-                Watch watch = watchRepo.findById(id)
-                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                                "Watch not found with id " + id));
+
+                Watch watch = findWatchOrThrow(id);
 
                 return WatchMapper.toDTO(watch);
         }
 
         /**
-         * Searches for watches matching the provided criteria.
+         * Searches for watches matching the provided filter criteria.
          *
          * <p>
-         * Each parameter is optional; null values are ignored in the search.
+         * Filtering parameters are encapsulated inside {@link WatchSearchDTO}.
+         * Pagination and sorting are handled through {@link Pageable}.
          * </p>
          *
-         * @param brand           the brand name to search for
-         * @param model           the model name to search for
-         * @param caseMaterial    the case material
-         * @param strapMaterial   the strap material
-         * @param movementType    the type of movement
-         * @param waterResistance minimum water resistance in meters
-         * @param caseDiameter    case diameter in millimeters
-         * @param caseThickness   case thickness in millimeters
-         * @param bandWidth       band width in millimeters
-         * @param dialColor       dial color
-         * @param crystalMaterial crystal material
-         * @param complications   complications of the watch
-         * @param powerReserve    minimum power reserve in hours
-         * @param maxPrice        maximum price in USD
+         * @param filters  the search filters
+         * @param pageable pagination and sorting information
          * @return a paginated list of matching watches
          */
         public PaginatedResponse<WatchListDTO> search(
@@ -125,8 +127,7 @@ public class WatchService {
 
                 Page<Watch> page = watchRepo.findAll(spec, safePageable);
 
-                List<WatchListDTO> content = page.getContent()
-                                .stream()
+                List<WatchListDTO> content = page
                                 .map(WatchMapper::toListDTO)
                                 .toList();
 
@@ -171,9 +172,7 @@ public class WatchService {
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID is required to update a watch");
                 }
 
-                Watch existing = watchRepo.findById(dto.id())
-                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                                "Watch not found with id " + dto.id()));
+                Watch existing = findWatchOrThrow(dto.id());
 
                 WatchMapper.updateEntity(dto, existing);
                 watchRepo.save(existing);
@@ -191,9 +190,7 @@ public class WatchService {
          *                                 404)
          */
         public void deleteWatch(Integer id) {
-                Watch existing = watchRepo.findById(id)
-                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                                "Watch not found with id " + id));
+                Watch existing = findWatchOrThrow(id);
 
                 watchRepo.delete(existing);
 
@@ -201,5 +198,4 @@ public class WatchService {
                                 existing.getBrand(),
                                 existing.getModel());
         }
-
 }

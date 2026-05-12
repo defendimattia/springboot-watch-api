@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import it.defendimattia.backenddemo.dto.PaginatedResponse;
@@ -63,6 +64,7 @@ public class WatchService {
          *
          * @return a paginated of watch data as {@link WatchListDTO}
          */
+        @Transactional(readOnly = true)
         public PaginatedResponse<WatchListDTO> getAllWatches(Pageable pageable) {
 
                 Pageable safePageable = PageableValidator.sanitize(
@@ -97,6 +99,7 @@ public class WatchService {
          * @throws ResponseStatusException if no watch with the given id exists (HTTP
          *                                 404)
          */
+        @Transactional(readOnly = true)
         public WatchDetailsDTO getWatchById(Integer id) {
 
                 Watch watch = findWatchOrThrow(id);
@@ -116,6 +119,7 @@ public class WatchService {
          * @param pageable pagination and sorting information
          * @return a paginated list of matching watches
          */
+        @Transactional(readOnly = true)
         public PaginatedResponse<WatchListDTO> search(
                         WatchSearchDTO filters,
                         Pageable pageable) {
@@ -147,6 +151,7 @@ public class WatchService {
          * @param dto the data used to create the watch
          * @return the created watch as {@link WatchDetailsDTO}
          */
+        @Transactional
         public WatchDetailsDTO addWatch(WatchCreateDTO dto) {
 
                 Watch watch = WatchMapper.toEntity(dto);
@@ -169,6 +174,7 @@ public class WatchService {
          * @throws ResponseStatusException if the watch ID is null (HTTP 400)
          *                                 or if the watch does not exist (HTTP 404)
          */
+        @Transactional
         public WatchDetailsDTO updateWatch(WatchUpdateDTO dto) {
                 if (dto.id() == null) {
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID is required to update a watch");
@@ -191,6 +197,7 @@ public class WatchService {
          * @throws ResponseStatusException if no watch with the given id exists (HTTP
          *                                 404)
          */
+        @Transactional
         public void deleteWatch(Integer id) {
                 Watch existing = findWatchOrThrow(id);
 

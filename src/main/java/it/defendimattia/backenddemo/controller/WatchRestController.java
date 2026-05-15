@@ -71,27 +71,14 @@ public class WatchRestController {
      * Searches for watches using optional filter criteria.
      *
      * <p>
-     * All parameters are optional; if a parameter is null, it is ignored in the
-     * search.
+     * Filter parameters are encapsulated inside {@link WatchSearchDTO}.
+     * Pagination and sorting are handled through {@link Pageable}.
      * </p>
      *
-     * @param brand           the brand name to filter by
-     * @param model           the model name to filter by
-     * @param caseMaterial    the case material
-     * @param strapMaterial   the strap material
-     * @param movementType    the movement type
-     * @param waterResistance minimum water resistance in meters
-     * @param caseDiameter    case diameter in millimeters
-     * @param caseThickness   case thickness in millimeters
-     * @param bandWidth       band width in millimeters
-     * @param dialColor       dial color
-     * @param crystalMaterial crystal material
-     * @param complications   complications/features of the watch
-     * @param powerReserve    minimum power reserve in hours
-     * @param maxPrice        maximum price in USD
+     * @param filters  the search filters
+     * @param pageable pagination and sorting information
      * @return a paginated list of matching watches
-     * @response 200 OK if the
-     *           request is successful
+     * @response 200 OK if the request is successful
      */
     @GetMapping("/search")
     public PaginatedResponse<WatchListDTO> searchWatches(

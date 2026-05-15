@@ -42,13 +42,15 @@ Pattern utilizzati:
 - CRUD completo watches
 - DTO pattern (Create / Update / List / Details)
 - Validazione input con Jakarta Validation
-- Exception handling centralizzato (REST errors uniformi)
+- Exception handling centralizzato con error response uniforme (GlobalExceptionHandler)
 - Logging operazioni principali
 - Ricerca avanzata con JPA Specification
 - Paginazione e sorting con Pageable
 - Whitelist dei campi ordinabili (security su sort)
 - Sanitizzazione parametri di paginazione
 - Configurazione tramite variabili ambiente
+- Error response standardizzato (timestamp, status, error, message, path, method, validation errors)
+- Gestione uniforme di validation errors, type mismatch e runtime exceptions
 
 ---
 

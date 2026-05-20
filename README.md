@@ -15,6 +15,9 @@ Il progetto implementa CRUD completo, ricerca avanzata con filtri dinamici, pagi
 - Maven
 - SLF4J + Logback
 - Jakarta Validation
+- JUnit 5
+- Mockito
+- MockMvc
 
 ---
 
@@ -51,6 +54,33 @@ Pattern utilizzati:
 - Configurazione tramite variabili ambiente
 - Error response standardizzato (timestamp, status, error, message, path, method, validation errors)
 - Gestione uniforme di validation errors, type mismatch e runtime exceptions
+- Unit test su mapper e service layer
+- Controller test con MockMvc
+
+---
+
+## Testing
+
+Il progetto include test automatizzati per verificare:
+
+### Mapper Tests
+- conversione Entity → DTO
+- update parziale con campi non null
+- preservazione valori esistenti quando il DTO contiene null
+
+### Service Tests
+- recupero watch tramite ID
+- ricerca paginata
+- creazione watch
+- aggiornamento watch
+- eliminazione watch
+- gestione eccezioni (`404 NOT FOUND`, `400 BAD REQUEST`)
+
+### Controller Tests
+- endpoint REST principali
+- validazione request body
+- gestione error response
+- verifica status HTTP e payload JSON tramite MockMvc
 
 ---
 
@@ -115,6 +145,33 @@ Le risposte paginate sono standardizzate tramite:
 
 ---
 
+## Error Handling
+
+Le eccezioni vengono gestite centralmente tramite `GlobalExceptionHandler`.
+
+### Gestione supportata:
+- Validation errors (`MethodArgumentNotValidException`)
+- Invalid parameter type (`MethodArgumentTypeMismatchException`)
+- Business exceptions (`ResponseStatusException`)
+- Generic runtime exceptions (`Exception`)
+
+### Struttura standard error response:
+```json
+{
+  "timestamp": "2026-05-20T12:00:00",
+  "status": 400,
+  "error": "400 BAD_REQUEST",
+  "message": "Validation failed",
+  "path": "/api/watches",
+  "method": "POST",
+  "errors": {
+    "price": "must be greater than 0"
+  }
+}
+```
+
+---
+
 ## Database
 
 - Database: PostgreSQL
@@ -130,3 +187,5 @@ Le risposte paginate sono standardizzate tramite:
 - La logica di query dinamica è separata nel `WatchSearchSpecification`
 - La validazione della paginazione è gestita da `PageableValidator`
 - Il service layer non contiene logica di costruzione query complessa
+- I controller delegano completamente la business logic al service layer
+- Le response API sono mantenute consistenti tramite DTO dedicati

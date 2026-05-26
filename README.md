@@ -21,6 +21,22 @@ Il progetto implementa CRUD completo, ricerca avanzata con filtri dinamici, pagi
 
 ---
 
+## API Documentation (Swagger / OpenAPI)
+
+Il progetto integra Swagger/OpenAPI per la documentazione e il test delle API.
+
+### Accesso alla documentazione:
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+
+### Funzionalità:
+- Esplorazione interattiva degli endpoint
+- Test API direttamente dal browser
+- Documentazione automatica dei DTO
+- Supporto a query params, pagination e validation
+
+---
+
 ## Architettura
 
 Controller → Service → Repository
@@ -56,6 +72,7 @@ Pattern utilizzati:
 - Gestione uniforme di validation errors, type mismatch e runtime exceptions
 - Unit test su mapper e service layer
 - Controller test con MockMvc
+- Documentazione API con Swagger/OpenAPI
 
 ---
 
@@ -128,6 +145,26 @@ La ricerca utilizza:
 - complications
 - powerReserve
 - maxPrice
+
+---
+
+## List All Watches (Paginated)
+
+### Endpoint:
+`GET /api/watches`
+
+Restituisce una lista paginata di orologi con un DTO semplificato (`WatchListDTO`), senza tutti i dettagli completi.
+
+### Differenza rispetto a search:
+- Nessun filtro applicato
+- Output semplificato
+- Usato per listing generale
+- Supporta paginazione e sorting
+
+### Parametri:
+- page (default: 0)
+- size (default: 10)
+- sort (es: `brand,asc`)
 
 ---
 

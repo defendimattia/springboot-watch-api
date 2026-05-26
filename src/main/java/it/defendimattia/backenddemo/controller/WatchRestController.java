@@ -1,11 +1,15 @@
 package it.defendimattia.backenddemo.controller;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.defendimattia.backenddemo.dto.PaginatedResponse;
 import it.defendimattia.backenddemo.dto.WatchCreateDTO;
 import it.defendimattia.backenddemo.dto.WatchDetailsDTO;
@@ -48,8 +52,12 @@ public class WatchRestController {
      * @return a list of watch data as {@link WatchDetailsDTO}
      * @response 200 OK if the request is successful
      */
+    @Operation(summary = "Get all watches")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Watches retrieved successfully")
+    })
     @GetMapping
-    public PaginatedResponse<WatchListDTO> index(Pageable pageable) {
+    public PaginatedResponse<WatchListDTO> index(@ParameterObject Pageable pageable) {
         return watchService.getAllWatches(pageable);
     }
 
@@ -61,6 +69,11 @@ public class WatchRestController {
      * @response 200 OK if found
      * @response 404 NOT FOUND if no watch exists with the given ID
      */
+    @Operation(summary = "Get watch by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Watch found"),
+            @ApiResponse(responseCode = "404", description = "Watch not found")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<WatchDetailsDTO> show(@PathVariable Integer id) {
         WatchDetailsDTO watch = watchService.getWatchById(id);
@@ -80,6 +93,10 @@ public class WatchRestController {
      * @return a paginated list of matching watches
      * @response 200 OK if the request is successful
      */
+    @Operation(summary = "Search watches with filters and pagination")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search completed successfully")
+    })
     @GetMapping("/search")
     public PaginatedResponse<WatchListDTO> searchWatches(
             @Valid WatchSearchDTO filters,
@@ -96,6 +113,11 @@ public class WatchRestController {
      * @response 201 CREATED if successfully created
      * @response 409 CONFLICT if a watch with the same ID already exists
      */
+    @Operation(summary = "Create a new watch")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Watch created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data")
+    })
     @PostMapping
     public ResponseEntity<WatchDetailsDTO> createWatch(@Valid @RequestBody WatchCreateDTO watch) {
 
@@ -117,6 +139,12 @@ public class WatchRestController {
      * @response 400 BAD REQUEST if the ID is missing
      * @response 404 NOT FOUND if the watch does not exist
      */
+    @Operation(summary = "Partially update a watch")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Watch updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid update data"),
+            @ApiResponse(responseCode = "404", description = "Watch not found")
+    })
     @PatchMapping
     public ResponseEntity<WatchDetailsDTO> updateWatchPartial(@Valid @RequestBody WatchUpdateDTO dto) {
 
@@ -132,6 +160,11 @@ public class WatchRestController {
      * @return 204 NO CONTENT if successfully deleted
      * @response 404 NOT FOUND if no watch exists with the given ID
      */
+    @Operation(summary = "Delete a watch by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Watch deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Watch not found")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Watch> deleteWatch(@PathVariable Integer id) {
 

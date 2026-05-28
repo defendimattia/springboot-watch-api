@@ -226,3 +226,40 @@ Le eccezioni vengono gestite centralmente tramite `GlobalExceptionHandler`.
 - Il service layer non contiene logica di costruzione query complessa
 - I controller delegano completamente la business logic al service layer
 - Le response API sono mantenute consistenti tramite DTO dedicati
+
+---
+
+## Docker Setup
+
+Il progetto è completamente containerizzato tramite Docker e Docker Compose.
+
+### Avvio dell'applicazione
+
+docker compose up --build
+
+### Servizi inclusi
+- Spring Boot REST API
+- PostgreSQL database
+- Inizializzazione automatica del database tramite init.sql
+
+---
+
+## Environment Variables
+
+La configurazione del database è gestita tramite file .env:
+
+- DB_HOST
+- DB_PORT
+- DB_NAME
+- DB_USERNAME
+- DB_PASSWORD
+
+---
+
+## Database Initialization
+
+All'avvio del container PostgreSQL viene eseguito automaticamente lo script:
+
+docker/init/init.sql
+
+Questo script crea e popola la tabella luxury_watches con dati di esempio.

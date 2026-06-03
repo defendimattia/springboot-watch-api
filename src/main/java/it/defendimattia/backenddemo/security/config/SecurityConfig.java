@@ -26,6 +26,7 @@ public class SecurityConfig {
 
                         // login/register pubblici
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/register").permitAll()
 
                         // USER e ADMIN solo chiamate GET
                         .requestMatchers(HttpMethod.GET, "/api/watches/**").hasAnyRole("USER", "ADMIN")

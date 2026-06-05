@@ -37,8 +37,8 @@ public record WatchCreateDTO(
 
         @Size(max = 400, message = "complications must be max 400 characters long") String complications,
 
-        @Positive Short powerReserve,
+        @Positive(message = "power reserve must be greater than 0") Short powerReserve,
 
-        @Positive Integer price) {
+        @Positive(message = "price must be greater than 0") Integer price) {
 
 }

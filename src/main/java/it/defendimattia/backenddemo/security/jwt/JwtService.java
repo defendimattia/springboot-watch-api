@@ -14,7 +14,7 @@ public class JwtService {
 
     @Value("${jwt.secret}")
     private String SECRET;
-    
+
     private final long EXPIRATION = 1000 * 60 * 60;
 
     private SecretKey getSigningKey() {
@@ -23,19 +23,19 @@ public class JwtService {
 
     public String generateToken(String username) {
         return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .subject(username)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(getSigningKey())
                 .compact();
     }
 
     public String extractUsername(String token) {
         return Jwts.parser()
-                .setSigningKey(getSigningKey())
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody()
+                .parseSignedClaims(token)
+                .getPayload()
                 .getSubject();
     }
 

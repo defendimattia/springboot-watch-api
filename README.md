@@ -18,6 +18,95 @@ Il progetto implementa CRUD completo, ricerca avanzata con filtri dinamici, pagi
 - JUnit 5
 - Mockito
 - MockMvc
+- Spring Security
+- JSON Web Token (JWT)
+
+---
+
+## Authentication & Security
+
+Il progetto implementa un sistema di autenticazione e autorizzazione basato su Spring Security e JWT (JSON Web Token).
+
+### Meccanismo di sicurezza
+
+L’API è protetta tramite autenticazione stateless:
+
+- L’utente si registra tramite endpoint pubblico  
+- Effettua login con username e password  
+- Riceve un JWT token  
+- Il token viene utilizzato per autorizzare le richieste successive  
+
+---
+
+### Flusso di autenticazione
+
+1. Register  
+   `POST /auth/register`  
+   Password salvata in formato hash (BCrypt)
+
+2. Login  
+   `POST /auth/login`  
+   Verifica credenziali tramite AuthenticationManager  
+   Generazione JWT token  
+
+3. API Requests protette  
+``` md id="a1b2c3"
+Header richiesto:
+
+Authorization: Bearer <JWT_TOKEN>
+```
+
+Il token viene validato ad ogni richiesta tramite filtro JWT
+
+---
+
+### JWT Features
+
+- Token firmato con chiave segreta (HMAC SHA)
+- Expiration time configurabile
+- Stateless authentication (nessuna sessione server-side)
+- Estrazione username dal token
+- Validazione firma e scadenza
+
+---
+
+### Authorization (Role-based access control)
+
+Il sistema supporta ruoli utente:
+
+- USER
+- ADMIN
+
+Regole di accesso:
+
+- GET /api/watches/** → USER + ADMIN  
+- POST /api/watches/** → ADMIN  
+- PATCH /api/watches/** → ADMIN  
+- DELETE /api/watches/** → ADMIN  
+
+---
+
+### Spring Security Configuration
+
+- Stateless session management
+- CSRF disabled (REST API)
+- HTTP Basic e Form Login disabilitati
+- JWT Filter personalizzato per autenticazione
+- SecurityContext popolato tramite token
+
+---
+
+### Swagger Authentication
+
+Per testare endpoint protetti tramite Swagger UI:
+
+1. Effettuare login tramite `/auth/login`
+2. Copiare il token JWT ricevuto
+3. Cliccare su Authorize in Swagger UI
+4. Inserire:
+``` md id="d4e5f6"
+Bearer <JWT_TOKEN>
+```
 
 ---
 

@@ -58,6 +58,15 @@ Authorization: Bearer <JWT_TOKEN>
 
 Il token viene validato ad ogni richiesta tramite filtro JWT
 
+### Authentication Errors
+
+In caso di credenziali non valide, l'API restituisce:
+
+- HTTP 401 Unauthorized
+- Error response standardizzata tramite GlobalExceptionHandler
+
+Per motivi di sicurezza non viene specificato se l'errore dipende da username inesistente o password errata.
+
 ---
 
 ### JWT Features
@@ -278,6 +287,7 @@ Le eccezioni vengono gestite centralmente tramite `GlobalExceptionHandler`.
 ### Gestione supportata:
 - Validation errors (`MethodArgumentNotValidException`)
 - Invalid parameter type (`MethodArgumentTypeMismatchException`)
+- Authentication errors (`BadCredentialsException`)
 - Business exceptions (`ResponseStatusException`)
 - Generic runtime exceptions (`Exception`)
 

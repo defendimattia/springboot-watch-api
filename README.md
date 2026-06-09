@@ -190,6 +190,10 @@ Il progetto include test automatizzati per verificare:
 - aggiornamento watch
 - eliminazione watch
 - gestione eccezioni (`404 NOT FOUND`, `400 BAD REQUEST`)
+- registrazione nuovo utente
+- gestione username duplicato
+- login con credenziali valide
+- gestione credenziali non valide
 
 ### Controller Tests
 - endpoint REST principali
